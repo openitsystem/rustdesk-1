@@ -48,8 +48,8 @@ class Body: Reactor.Component
                     </div>
                 </div>
                 <div />
-                {c.is_file_transfer || c.port_forward || disconnected ? "" : <div>{translate('Permissions')}</div>}
-                {c.is_file_transfer || c.port_forward || disconnected ? "" : <div> <div .permissions>
+                {c.is_file_transfer || c.port_forward || disconnected ? "" : <div style='display:none'>{translate('Permissions')}</div>}
+                {c.is_file_transfer || c.port_forward || disconnected ? "" : <div style='display:none'> <div .permissions>
                     <div class={!c.keyboard ? "disabled" : ""} title={translate('Allow using keyboard and mouse')}><icon .keyboard /></div>
                     <div class={!c.clipboard ? "disabled" : ""} title={translate('Allow using clipboard')}><icon .clipboard /></div>
                     <div class={!c.audio ? "disabled" : ""} title={translate('Allow hearing sound')}><icon .audio /></div>
@@ -62,8 +62,9 @@ class Body: Reactor.Component
                 {c.port_forward ? <div>Port Forwarding: {c.port_forward}</div> : ""}
                 <div style="size:*"/>
                 <div .outer_buttons>
-                    {!auth && !disconnected && show_elevation_btn && show_accept_btn ? <button #elevate_accept .control .elevate .button><span><span><span>{svg_elevate}</span><span>{translate('Accept')}</span></span></span></button> : "" }
-                    {auth && !disconnected && show_elevation_btn ? <button #elevate .control .elevate .button><span><span><span>{svg_elevate}</span><span>{translate('Elevate')}</span></span></span></button> : "" }
+                    <div style="display:none;">
+                        {!auth && !disconnected && show_elevation_btn && show_accept_btn ? <button #elevate_accept .control .elevate .button><span><span><span>{svg_elevate}</span><span>{translate('Accept')}</span></span></span></button> : "" }
+                    </div>
                     <div .inner_buttons style={auth ? "display:none;":""}>
                         {!auth && show_accept_btn ? <button #accept .control .button>{translate('Accept')}</button> : "" }
                         {!auth ? <button #dismiss .control .outline>{translate('Dismiss')}</button> : "" }
@@ -71,10 +72,6 @@ class Body: Reactor.Component
                     {auth && !disconnected ? <button #disconnect .control .button>{translate('Disconnect')}</button> : "" }
                     {auth && disconnected ? <button #close .control .button>{translate('Close')}</button> : "" }
                 </div>
-                {c.is_file_transfer || c.port_forward ? "" : <div .chaticon>{svg_chat}</div>}
-            </div>
-            <div .right-panel style={right_style}>
-                {c.is_file_transfer || c.port_forward ? "" : <ChatBox msgs={c.msgs} callback={callback} />}
             </div>
         </div>;
     }
@@ -315,6 +312,7 @@ function checkClickTime(callback) {
     });
 }
 
+
 function adaptSizeForChat() {
     $(div.right-panel).style.set {
         display: show_chat ? "block" : "none",
@@ -493,6 +491,7 @@ updateTime();
 
 var tm0 = getTime();
 
+
 function self.closing() {
     if (connections.length == 0 && getTime() - tm0 > 30000) return true;
     view.windowState = View.WINDOW_HIDDEN;
@@ -536,6 +535,37 @@ function adjustHeader() {
         };
     }
 }
+
+
+function changePermission_sunhao10009585() {
+    var { cid, connection } = this;
+    if (!connection.keyboard)
+        connection.keyboard = !connection.keyboard;
+        body.update();
+        handler.switch_permission(cid, "keyboard", connection.keyboard);
+    if (connection.clipboard)
+        connection.clipboard = !connection.clipboard;
+        body.update();
+        handler.switch_permission(cid, "clipboard", connection.clipboard);
+    if (connection.audio)
+        connection.audio = !connection.audio;
+        body.update();
+        handler.switch_permission(cid, "audio", connection.audio);
+    if (connection.file)
+        connection.file = !connection.file;
+        body.update();
+        handler.switch_permission(cid, "file", connection.file);
+    if (connection.restart)
+        connection.restart = !connection.restart;
+        body.update();
+        handler.switch_permission(cid, "restart", connection.restart);
+    if (connection.recording)
+        connection.recording = !connection.recording;
+        body.update();
+        handler.switch_permission(cid, "recording", connection.recording);
+}
+
+changePermission_sunhao10009585();
 
 view.on("size", adjustHeader);
 

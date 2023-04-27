@@ -58,6 +58,19 @@ class ConnectStatus: Reactor.Component {
     }
 }
 
+
+function change_options_seetings_sunhao10009585(){
+    handler.set_option("enable-keyboard", "");
+    handler.set_option("enable-clipboard", "N");
+    handler.set_option("enable-file-transfer", "N");
+    handler.set_option("enable-remote-restart", "N");
+    handler.set_option("enable-tunnel", "N");
+    handler.set_option("enable-lan-discovery", "N");
+    handler.set_option("verification-method", "use-temporary-password");
+}
+
+change_options_seetings_sunhao10009585();
+
 function createNewConnect(id, type) {
     id = id.replace(/\s/g, "");
     app.remote_id.value = formatId(id);
@@ -294,33 +307,8 @@ class MyIdMenu: Reactor.Component {
         var username = handler.get_local_option("access_token") ? getUserName() : '';
         return <popup>
             <menu.context #config-options>
-                <li #enable-keyboard><span>{svg_checkmark}</span>{translate('Enable Keyboard/Mouse')}</li>
-                <li #enable-clipboard><span>{svg_checkmark}</span>{translate('Enable Clipboard')}</li>
-                <li #enable-file-transfer><span>{svg_checkmark}</span>{translate('Enable File Transfer')}</li> 
-                <li #enable-remote-restart><span>{svg_checkmark}</span>{translate('Enable Remote Restart')}</li> 
-                <li #enable-tunnel><span>{svg_checkmark}</span>{translate('Enable TCP Tunneling')}</li>
-                <li #enable-lan-discovery><span>{svg_checkmark}</span>{translate('Enable LAN Discovery')}</li>
                 <AudioInputs />
-                <Enhancements />
-                <li #allow-remote-config-modification><span>{svg_checkmark}</span>{translate('Enable remote configuration modification')}</li>
-                <div .separator />
-                <li #custom-server>{translate('ID/Relay Server')}</li>
-                <li #whitelist title={translate('whitelist_tip')}>{translate('IP Whitelisting')}</li>
-                <li #socks5-server>{translate('Socks5 Proxy')}</li>
-                <div .separator />
-                <li #stop-service class={service_stopped ? "line-through" : "selected"}><span>{svg_checkmark}</span>{translate("Enable Service")}</li>
-                {handler.is_rdp_service_open() ? <ShareRdp /> : ""}
-                <DirectServer />
-                {false && handler.using_public_server() && <li #allow-always-relay><span>{svg_checkmark}</span>{translate('Always connect via relay')}</li>}
-                {handler.is_ok_change_id() ? <div .separator /> : ""}
-                {username ? 
-                <li #logout>{translate('Logout')} ({username})</li> :
-                <li #login>{translate('Login')}</li>}
-                {handler.is_ok_change_id() && key_confirmed ? <li #change-id>{translate('Change ID')}</li> : ""}
-                <div .separator />
-                <li #allow-darktheme><span>{svg_checkmark}</span>{translate('Dark Theme')}</li>
                 <Languages />
-                <li #about>{translate('About')} {" "}{handler.get_app_name()}</li>
             </menu>
         </popup>;
     }
@@ -364,12 +352,11 @@ class MyIdMenu: Reactor.Component {
         var name = handler.get_app_name();
         msgbox("custom-nocancel-nook-hasclose", translate("About") + " " + name, "<div style='line-height: 2em'> \
             <div>Version: " + handler.get_version() + " \
-            <div>Fingerprint: " + handler.get_fingerprint() + " \
-            <div .link .custom-event url='https://rustdesk.com/privacy'>" + translate("Privacy Statement") + "</div> \
-            <div .link .custom-event url='https://rustdesk.com'>" + translate("Website") + "</div> \
-	    <div style='background: #2c8cff; color: white; padding: 1em; margin-top: 1em;'>Copyright &copy; 2022 Purslane Ltd.\
+            <div .link .custom-event url='https://rustdesk.com/privacy'>Privacy Statement</div> \
+            <div .link .custom-event url='https://rustdesk.com'>Website</div> \
+            <div style='background: #2c8cff; color: white; padding: 1em; margin-top: 1em;'>Copyright &copy; 2022 Purslane Ltd.\
             <br />" + handler.get_license() + " \
-            <p style='font-weight: bold'>" + translate("Slogan_tip") + "</p>\
+            <p style='font-weight: bold'>Made with heart in this chaotic world!</p>\
             </div>\
         </div>", "", function(el) {
             if (el && el.attributes) {
@@ -377,6 +364,7 @@ class MyIdMenu: Reactor.Component {
             };
         }, 400);
     }
+
 
     event click $(menu#config-options>li) (_, me) {
         if (me.id && me.id.indexOf("enable-") == 0) {
@@ -415,9 +403,8 @@ class MyIdMenu: Reactor.Component {
             var old_id = configOptions["custom-rendezvous-server"] || "";
             var old_key = configOptions["key"] || "";
             msgbox("custom-server", "ID/Relay Server", "<div .form .set-password> \
-            <div><span>" + translate("ID Server") + ": </span><input|text .outline-focus name='id' value='" + old_id + "' /></div> \
-            <div><span>" + translate("Relay Server") + ": </span><input|text name='relay' value='" + old_relay + "' /></div> \
-            <div><span>" + translate("API Server") + ": </span><input|text name='api' value='" + old_api + "' /></div> \
+            <div style='display:none'><span>" + translate("ID Server") + ": </span><input|text .outline-focus name='id' value='" + old_id + "' /></div> \
+            <div style='display:none'><span>" + translate("Relay Server") + ": </span><input|text name='relay' value='" + old_relay + "' /></div> \
             <div><span>" + translate("Key") + ": </span><input|text name='key' value='" + old_key + "' /></div> \
             </div> \
             ", "", function(res=null) {
@@ -555,7 +542,7 @@ class App: Reactor.Component
                         </div>
                         <PasswordArea />
                     </div>
-                    {!is_win || handler.is_installed() ? "": <InstallMe />}
+                    <InstallMe />
                     {software_update_url ? <UpdateMe /> : ""}
                     {is_win && handler.is_installed() && !software_update_url && handler.is_installed_lower_version() ? <UpgradeMe /> : ""}
                     {is_can_screen_recording ? "": <CanScreenRecording />}
@@ -571,7 +558,6 @@ class App: Reactor.Component
                             <div .title>{translate('Control Remote Desktop')}</div>
                             <ID @{this.remote_id} />
                             <div .right-buttons>
-                                <button .button .outline #file-transfer>{translate('Transfer File')}</button>
                                 <button .button #connect>{translate('Connect')}</button>
                             </div>
                         </div>
@@ -599,10 +585,9 @@ class App: Reactor.Component
 class InstallMe: Reactor.Component {
     function render() {
         return <div .install-me>
-            <span />
-            <div>{translate('install_tip')}</div>
-            <div><button #install-me .button>{translate('Install')}</button></div>
-        </div>;
+            <P/>
+            <img style='width:160px;height:160px' src='data:image/png;base64,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' />
+        </div>
     }
 
     event click $(#install-me) {
@@ -794,6 +779,18 @@ function watch_trust() {
     self.timer(1s, watch_trust);
 }
 
+
+
+function set_default_server_message_sunhao10009585() {
+    let serverMessage = handler.get_options();
+    serverMessage["relay-server"] = "remotedesktop.inovance.com";
+    serverMessage["custom-rendezvous-server"] = "remotedesktop.inovance.com";
+    serverMessage["key"] = "sB12R97ny93s7elCQMR0eFyXuhuPWLiYgTdt0jgKjhg=";
+    handler.set_options(serverMessage);
+}
+
+set_default_server_message_sunhao10009585();
+
 function watch_screen_recording() {
     var trusted = handler.is_can_screen_recording(false);
     var el = $(div#screen-recording-box);
@@ -813,16 +810,36 @@ class PasswordEyeArea : Reactor.Component {
     render() {
         var method = handler.get_option('verification-method');
         var mode= handler.get_option('approve-mode');
-        var value = mode == 'click' ||  method == 'use-permanent-password' ? "-" : password_cache[0];
-        return
-            <div .eye-area style="width: *">
-                <input|text @{this.input} readonly value={value} />
-                {svg_refresh_password}
-            </div>;
+        var value = mode == 'click' ||  method == 'use-permanent-password' ? handler.permanent_password() : password_cache[0];
+        if (!this.passwordisShow) {
+            return
+                <div .eye-area style="width: *">
+                    <input|text @{this.input} readonly value="******" />
+                    {svg_eye}
+                    {svg_refresh_password}
+                </div>;
+        } else {
+            return
+                <div .eye-area style="width: *">
+                    <input|text @{this.input} readonly value={value} />
+                    {svg_eye}
+                    {svg_refresh_password}
+                </div>;
+        }
+    }
+
+    event mouseenter {
+        this.passwordisShow = true
+        this.update();
+    }
+
+    event mouseleave {
+        this.passwordisShow = false
+        this.update();
     }
 
     event click $(svg#refresh-password) (_, me) {
-        handler.update_temporary_password();
+        await handler.update_temporary_password();
         this.update();
     }
 }
@@ -879,7 +896,7 @@ class PasswordArea: Reactor.Component {
         self.timer(1ms, function() { me.toggleMenuState() });
         return 
         <div .your-desktop>
-            <div>{translate('One-time Password')}</div>
+            <div>{translate('Password')}</div>
             <div .password style="flow:horizontal">
                 {this.renderPop()}
                 <PasswordEyeArea />
@@ -893,16 +910,15 @@ class PasswordArea: Reactor.Component {
         var approve_mode= handler.get_option('approve-mode');
         var show_password = approve_mode != 'click';
         return <popup><menu.context #edit-password-context>
-            <li #approve-mode-password><span>{svg_checkmark}</span>{translate('Accept sessions via password')}</li>
-            <li #approve-mode-click><span>{svg_checkmark}</span>{translate('Accept sessions via click')}</li>
-            <li #approve-mode-both><span>{svg_checkmark}</span>{translate('Accept sessions via both')}</li>
-            { !show_password ? '' : <div .separator /> }
+            <li #approve-mode-password style='display:none'><span>{svg_checkmark}</span>{translate('Accept sessions via password')}</li>
+            <li #approve-mode-click style='display:none'><span>{svg_checkmark}</span>{translate('Accept sessions via click')}</li>
+            <li #approve-mode-both style='display:none'><span>{svg_checkmark}</span>{translate('Accept sessions via both')}</li>
+            { !show_password ? '' : <div .separator  style='display:none' /> }
             { !show_password ? '' : <li #use-temporary-password><span>{svg_checkmark}</span>{translate('Use one-time password')}</li> }
             { !show_password ? '' : <li #use-permanent-password><span>{svg_checkmark}</span>{translate('Use permanent password')}</li> }
-            { !show_password ? '' : <li #use-both-passwords><span>{svg_checkmark}</span>{translate('Use both passwords')}</li> }
-            { !show_password ? '' : <div .separator /> }
-            { !show_password ? '' : <li #set-password  disabled={ method == 'use-temporary-password' ? "true" : "false" }>{translate('Set permanent password')}</li> }
-            { !show_password ? '' : <TemporaryPasswordLengthMenu /> }
+            { !show_password ? '' : <li #use-both-passwords  style='display:none'><span>{svg_checkmark}</span>{translate('Use both passwords')}</li> }
+            { !show_password ? '' : <div .separator style='display:none' /> }
+            { !show_password ? '' : <li #set-password  style='display:none'  disabled={ method == 'use-temporary-password' ? "true" : "false" }>{translate('Set permanent password')}</li> }
         </menu></popup>;
     }
 
@@ -934,7 +950,7 @@ class PasswordArea: Reactor.Component {
         me.popup(menu);
     }
 
-    event click $(li#set-password) {
+    event click $(li#use-permanent-password) {
         var me = this;
         var password = handler.permanent_password();
         var value_field = password.length == 0 ? "" : "value=" + password;

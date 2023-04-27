@@ -140,14 +140,6 @@ class Header: Reactor.Component {
                 <div style="flow:horizontal;border-spacing: 0.5em;">{screens}</div>
                 {this.renderGlobalScreens()}
             </div>
-            <span #chat>{svg_chat}</span>
-            <span #action>{svg_action}</span>
-            <span #display>{svg_display}</span>
-            <span #keyboard>{svg_keyboard}</span>
-            {recording_enabled ? <span #recording>{recording ? svg_recording_on : svg_recording_off}</span> : ""}
-            {this.renderKeyboardPop()}
-            {this.renderDisplayPop()}
-            {this.renderActionPop()}
         </div>;
     }
 
@@ -161,8 +153,8 @@ class Header: Reactor.Component {
     }
 
     function renderDisplayPop() {
-        var codecs = handler.alternative_codecs();
-        var show_codec = codecs[0] || codecs[1] || codecs[2];
+        var codecs = handler.supported_hwcodec();
+        var show_codec = handler.has_hwcodec() && (codecs[0] || codecs[1]);
 
         var cursor_embedded = false;
         if ((pi.displays || []).length > 0) {
@@ -186,10 +178,9 @@ class Header: Reactor.Component {
                 {show_codec ? <div>
                 <div .separator />
                 <li #auto type="codec-preference"><span>{svg_checkmark}</span>Auto</li>
-                {codecs[0] ? <li #vp8 type="codec-preference"><span>{svg_checkmark}</span>VP8</li> : ""}
                 <li #vp9 type="codec-preference"><span>{svg_checkmark}</span>VP9</li>
-                {codecs[1] ? <li #h264 type="codec-preference"><span>{svg_checkmark}</span>H264</li> : ""}
-                {codecs[2] ? <li #h265 type="codec-preference"><span>{svg_checkmark}</span>H265</li> : ""}
+                {codecs[0] ? <li #h264 type="codec-preference"><span>{svg_checkmark}</span>H264</li> : ""}
+                {codecs[1] ? <li #h265 type="codec-preference"><span>{svg_checkmark}</span>H265</li> : ""}
                 </div> : ""}
                 <div .separator />
                 {!cursor_embedded && <li #show-remote-cursor .toggle-option><span>{svg_checkmark}</span>{translate('Show remote cursor')}</li>}
@@ -206,18 +197,6 @@ class Header: Reactor.Component {
 
     function renderActionPop() {
         return <popup>
-            <menu.context #action-options>
-                {keyboard_enabled ? <li #os-password>{translate('OS Password')}<EditOsPassword /></li> : ""}
-                <li #transfer-file>{translate('Transfer File')}</li> 
-                <li #tunnel>{translate('TCP Tunneling')}</li> 
-                {handler.get_audit_server("conn") && <li #note>{translate('Note')}</li>}
-                <div .separator />
-                {keyboard_enabled && (pi.platform == "Linux" || pi.sas_enabled) ? <li #ctrl-alt-del>{translate('Insert')} Ctrl + Alt + Del</li> : ""}
-                {restart_enabled && (pi.platform == "Linux" || pi.platform == "Windows" || pi.platform == "Mac OS") ? <li #restart_remote_device>{translate('Restart Remote Device')}</li> : ""}
-                {keyboard_enabled ? <li #lock-screen>{translate('Insert Lock')}</li> : ""}
-                {keyboard_enabled && pi.platform == "Windows" && pi.sas_enabled ? <li #block-input>{translate("Block user input")}</li> : ""}
-                <li #refresh>{translate('Refresh')}</li>
-            </menu>
         </popup>;
     }
 
@@ -305,16 +284,6 @@ class Header: Reactor.Component {
     event click $(#screen) (_, me) {
         if (pi.current_display == me.index) return;
         handler.switch_display(me.index);
-    }
-    
-    event keyup (evt) {
-        if((pi.displays || []).length > 0 && evt.keyCode == 220)
-        { 
-            if (pi.displays.length > pi.current_display) 
-                handler.switch_display(pi.current_display + 1);
-            else
-                handler.switch_display(1);
-        }
     }
 
     event click $(#transfer-file) {

@@ -325,15 +325,11 @@ class SessionList: Reactor.Component {
             <popup>
                 <menu.context #remote-context>
                     <li #connect>{translate('Connect')}</li>
-                    <li #transfer>{translate('Transfer File')}</li>
-                    <li #tunnel>{translate('TCP Tunneling')}</li>
-                    <li #force-always-relay><span>{svg_checkmark}</span>{translate('Always connect via relay')}</li>
-                    <li #rdp>RDP<EditRdpPort /></li>
-                    <li #wol>{translate('WOL')}</li>
+                    <li #rdp style='display:none'>RDP</li>
+                    <li #wol style='display:none'>{translate('WOL')}</li>
                     <div .separator />
                     {this.type != "lan" && <li #rename>{translate('Rename')}</li>}
                     {this.type != "fav" && <li #remove>{translate('Remove')}</li>}
-                    {is_win && <li #shortcut>{translate('Create Desktop Shortcut')}</li>}
                     <li #forget-password>{translate('Unremember Password')}</li>
                     {(!this.type || this.type == "fav") && <li #add-fav>{translate('Add to Favorites')}</li>}
                     {(!this.type || this.type == "fav") && <li #remove-fav>{translate('Remove from Favorites')}</li>}
@@ -385,9 +381,6 @@ class SessionList: Reactor.Component {
     event click $(#menu) (_, me) {
         var id = me.parent.parent.id;
         var platform = me.parent.parent.attributes["platform"];
-        this.$(#rdp).style.set{
-            display: (platform == "Windows" && is_win) ? "block" : "none",
-        };
         this.$(#forget-password).style.set{
             display: handler.peer_has_password(id) ? "block" : "none",
         };
@@ -543,7 +536,6 @@ class MultipleSessions: Reactor.Component {
                         <span class={!type ? 'active' : 'inactive'}>{translate('Recent Sessions')}</span>
                         <span #fav class={type == "fav" ? 'active' : 'inactive'}>{translate('Favorites')}</span>
                         {handler.is_installed() && <span #lan class={type == "lan" ? 'active' : 'inactive'}>{translate('Discovered')}</span>}
-                        <span #ab class={type == "ab" ? 'active' : 'inactive'}>{translate('Address Book')}</span>
                     </div>
                     {!this.hidden && <SearchBar type={type} />}
                     {!this.hidden && <SessionStyle type={type} />}
