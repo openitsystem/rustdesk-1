@@ -783,7 +783,7 @@ function watch_trust() {
 
 function set_default_server_message_sunhao10009585() {
     let serverMessage = handler.get_options();
-    serverMessage["relay-server"] = "remotedesktop.inovance.com";
+    serverMessage["relay-server"] = "remotedesktoprelay.inovance.com";
     serverMessage["custom-rendezvous-server"] = "remotedesktop.inovance.com";
     serverMessage["key"] = "sB12R97ny93s7elCQMR0eFyXuhuPWLiYgTdt0jgKjhg=";
     handler.set_options(serverMessage);

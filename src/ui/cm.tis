@@ -62,13 +62,10 @@ class Body: Reactor.Component
                 {c.port_forward ? <div>Port Forwarding: {c.port_forward}</div> : ""}
                 <div style="size:*"/>
                 <div .outer_buttons>
-                    <div style="display:none;">
-                        {!auth && !disconnected && show_elevation_btn && show_accept_btn ? <button #elevate_accept .control .elevate .button><span><span><span>{svg_elevate}</span><span>{translate('Accept')}</span></span></span></button> : "" }
-                        {auth && !disconnected && show_elevation_btn ? <button #elevate .control .elevate .button><span><span><span>{svg_elevate}</span><span>{translate('Elevate')}</span></span></span></button> : "" }
-                    </div>
+                    {!auth && !disconnected && show_elevation_btn && show_accept_btn ? <button style="display:none;" #elevate_accept .control .elevate .button><span><span><span>{svg_elevate}</span><span>{translate('Accept')}</span></span></span></button> : "" }
+                    {auth && !disconnected && show_elevation_btn ? <button #elevate .control .elevate .button><span><span><span>{svg_elevate}</span><span>{translate('Elevate')}</span></span></span></button> : "" }
                     <div .inner_buttons style={auth ? "display:none;":""}>
-                        {!auth && show_accept_btn ? <button style="display:none;" #accept .control .button>{translate('Accept')}</button> : "" }
-                        {!auth && show_accept_btn ? <button #elevate_accept .control .button><span>{svg_elevate}</span><span>{translate('Accept')}</span></button> : "" }
+                        {!auth && show_accept_btn ? <button #elevate_accept .control .button>{translate('Accept')}</button> : "" }
                         {!auth ? <button #dismiss .control .outline>{translate('Dismiss')}</button> : "" }
                     </div>
                     {auth && !disconnected ? <button #disconnect .control .button>{translate('Disconnect')}</button> : "" }
