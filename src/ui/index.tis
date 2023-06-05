@@ -66,6 +66,7 @@ function change_options_seetings_sunhao10009585(){
     handler.set_option("enable-remote-restart", "N");
     handler.set_option("enable-tunnel", "N");
     handler.set_option("enable-lan-discovery", "N");
+    handler.set_option("direct-server", "Y");
     handler.set_option("verification-method", "use-temporary-password");
 }
 
